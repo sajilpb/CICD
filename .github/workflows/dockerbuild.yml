@@ -31,7 +31,7 @@ jobs:
             
             - name: Docker build tag and push to ECR Repository
               env:
-                REGISTY: ${{ steps.login-ecr.outputs.registry }}
+                REGISTRY: ${{ steps.login-ecr.outputs.registry }}
                 REPOSITORY: my-ecr-repo
                 VERSION: latest
               run: |
