@@ -27,6 +27,7 @@ jobs:
                 aws-region: us-east-1
             
             - name: Login To Amazon ECR
+              id: login-ecr
               uses: aws-actions/amazon-ecr-login@v2
             
             - name: Docker build tag and push to ECR Repository
@@ -37,6 +38,7 @@ jobs:
               run: |
                 docker build -t $REGISTRY/$REPOSITORY:$VERSION .
                 docker push $REGISTRY/$REPOSITORY:$VERSION
+              working-directory: 02-Docker-image-pipeline
 
 
 
