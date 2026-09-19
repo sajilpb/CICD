@@ -7,6 +7,31 @@ pipeline {
 
     stages {
 
+        stage('Maven Environment') {
+    steps {
+        sh '''
+            echo "USER:"
+            whoami
+
+            echo "HOME:"
+            echo $HOME
+
+            echo "WORKSPACE:"
+            echo $WORKSPACE
+
+            echo "MAVEN:"
+            which mvn
+            mvn -version
+
+            echo "M2:"
+            find /home/jenkins -maxdepth 4 -type d -name ".m2" 2>/dev/null || true
+
+            echo "Maven repository:"
+            find /home/jenkins -maxdepth 6 -type d -name "repository" 2>/dev/null || true
+        '''
+    }
+}
+
         stage('Build') {
             steps {
                 dir('03-java') {
