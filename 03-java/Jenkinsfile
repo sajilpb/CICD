@@ -5,44 +5,6 @@ pipeline {
         maven 'Maven3'
     }
 
-    stages {
-
-        stage('Maven Environment') {
-    steps {
-        sh '''
-            echo "USER:"
-            whoami
-
-            echo "HOME:"
-            echo $HOME
-
-            echo "WORKSPACE:"
-            echo $WORKSPACE
-
-            echo "MAVEN:"
-            which mvn
-            mvn -version
-
-            echo "M2:"
-            find /home/jenkins -maxdepth 4 -type d -name ".m2" 2>/dev/null || true
-
-            echo "Maven repository:"
-            find /home/jenkins -maxdepth 6 -type d -name "repository" 2>/dev/null || true
-        '''
-    }
-}
-        stage('Build test') {
-    steps {
-        dir('03-java') {
-            sh '''
-                mvn clean compile
-                echo "----- Maven cache -----"
-                find /home/jenkins -type d -name ".m2" 2>/dev/null || true
-                find /home/jenkins -type d -name "repository" 2>/dev/null | head -20
-            '''
-        }
-    }
-}
         stage('Build') {
             steps {
                 dir('03-java') {
@@ -50,6 +12,36 @@ pipeline {
                 }
             }
         }
+
+        stage('Find Maven Repository') {
+    steps {
+        sh '''
+            echo "===== Maven settings ====="
+
+            mvn help:evaluate \
+              -Dexpression=settings.localRepository \
+              -q \
+              -DforceStdout
+
+            echo
+            echo "===== Maven debug ====="
+
+            mvn -X -version 2>&1 | grep -i "local repository" || true
+
+            echo
+            echo "===== HOME ====="
+            echo "HOME=$HOME"
+
+            echo
+            echo "===== Jenkins directories ====="
+            ls -la /home/jenkins
+
+            echo
+            echo "===== Search entire filesystem ====="
+            find / -type d -name ".m2" 2>/dev/null || true
+        '''
+    }
+}
 
         stage('Test') {
             steps {
