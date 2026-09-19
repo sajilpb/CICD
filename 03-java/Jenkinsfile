@@ -31,7 +31,18 @@ pipeline {
         '''
     }
 }
-
+        stage('Build') {
+    steps {
+        dir('03-java') {
+            sh '''
+                mvn clean compile
+                echo "----- Maven cache -----"
+                find /home/jenkins -type d -name ".m2" 2>/dev/null || true
+                find /home/jenkins -type d -name "repository" 2>/dev/null | head -20
+            '''
+        }
+    }
+}
         stage('Build') {
             steps {
                 dir('03-java') {
