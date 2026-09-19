@@ -31,7 +31,7 @@ pipeline {
         '''
     }
 }
-        stage('Build') {
+        stage('Build test') {
     steps {
         dir('03-java') {
             sh '''
