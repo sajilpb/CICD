@@ -5,65 +5,68 @@ pipeline {
         maven 'Maven3'
     }
 
-    stage('Build') {
-        steps {
-            dir('03-java') {
-                sh 'mvn clean compile'
+    stages {
+
+        stage('Build') {
+            steps {
+                dir('03-java') {
+                    sh 'mvn clean compile'
+                }
             }
         }
-    }
 
-    stage('Find Maven Repository') {
-        steps {
-            sh '''
-                echo "===== Maven settings ====="
+        stage('Find Maven Repository') {
+            steps {
+                sh '''
+                    echo "===== Maven settings ====="
 
-                mvn help:evaluate \
-                -Dexpression=settings.localRepository \
-                -q \
-                -DforceStdout
+                    mvn help:evaluate \
+                    -Dexpression=settings.localRepository \
+                    -q \
+                    -DforceStdout
 
-                echo
-                echo "===== Maven debug ====="
+                    echo
+                    echo "===== Maven debug ====="
 
-                mvn -X -version 2>&1 | grep -i "local repository" || true
+                    mvn -X -version 2>&1 | grep -i "local repository" || true
 
-                echo
-                echo "===== HOME ====="
-                echo "HOME=$HOME"
+                    echo
+                    echo "===== HOME ====="
+                    echo "HOME=$HOME"
 
-                echo
-                echo "===== Jenkins directories ====="
-                ls -la /home/jenkins
+                    echo
+                    echo "===== Jenkins directories ====="
+                    ls -la /home/jenkins
 
-                echo
-                echo "===== Search entire filesystem ====="
-                find / -type d -name ".m2" 2>/dev/null || true
-            '''
-        }
-    }
-
-    stage('Test') {
-        steps {
-            dir('03-java') {
-                sh 'mvn test'
+                    echo
+                    echo "===== Search entire filesystem ====="
+                    find / -type d -name ".m2" 2>/dev/null || true
+                '''
             }
         }
-    }
 
-    stage('Package') {
-        steps {
-            dir('03-java') {
-                sh 'mvn package -DskipTests'
+        stage('Test') {
+            steps {
+                dir('03-java') {
+                    sh 'mvn test'
+                }
             }
         }
-    }
 
-    stage('Archive') {
-        steps {
-            dir('03-java') {
-                archiveArtifacts artifacts: 'target/*.jar',
-                                    fingerprint: true
+        stage('Package') {
+            steps {
+                dir('03-java') {
+                    sh 'mvn package -DskipTests'
+                }
+            }
+        }
+
+        stage('Archive') {
+            steps {
+                dir('03-java') {
+                    archiveArtifacts artifacts: 'target/*.jar',
+                                        fingerprint: true
+                }
             }
         }
     }
