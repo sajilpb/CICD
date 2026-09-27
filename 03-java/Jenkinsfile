@@ -7,6 +7,16 @@ pipeline {
 
     stages {
 
+        stage('Set Build Name') {
+            steps {
+                script {
+                    // For PR builds, CHANGE_BRANCH is the source branch; otherwise use BRANCH_NAME
+                    def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME
+                    currentBuild.displayName = "#${env.BUILD_NUMBER} - ${branch}"
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 dir('03-java') {
